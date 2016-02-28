@@ -1,32 +1,42 @@
-import web
+import BaseHTTPServer
 import random
 
-url = (
-    '/', 'Index',
-    '/temp', 'Temperature',
-    '/motion', 'Motion'
-)
-
-class Index:
-    def GET(self):
-        return "Hello world!"
+HOST_NAME = '127.0.0.1'
+PORT_NUMBER = 8080
 
 
-class Temperature:
-    def GET(self):
-        global temp
-        print "TEMP:", temp
-        return "Temperature: ", temp
+class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+    def do_HEAD(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+
+        if self.path == '/':
+            print "Index"
+
+        elif self.path == '/temp':
+            self.send_header('temperature', random.random())
+
+        elif self.path == '/motion':
+            self.send_header('motion', random.random())
+
+        else:
+            print "404"
+
+        self.end_headers()
 
 
-class Motion:
-    def GET(self):
-        return "Motion"
-    
+if __name__ == '__main__':
+    server_class = BaseHTTPServer.HTTPServer
+    httpd = server_class((HOST_NAME, PORT_NUMBER), MyHandler)
 
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        pass
 
-if __name__ == "__main__":
-    app = web.application(url, globals())
-    app.run()
-
-
+    httpd.server_close()
