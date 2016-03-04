@@ -1,4 +1,4 @@
-package hms.homeautomationsystem;
+package com.example.kamil.projectapp;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
