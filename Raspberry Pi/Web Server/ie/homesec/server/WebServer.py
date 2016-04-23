@@ -1,12 +1,16 @@
 import json
-import random
-import web
 import threading
 import time
 from datetime import datetime
-from ie.homesec.util.Task import TaskScheduler, TaskType
-from ie.homesec.util.CustomJSONEncoder import CustomJSONEncoder
-from ie.homesec.sensor.FakeSensors import TemperatureSensor, MotionSensor
+
+import web
+
+from FakeSensors import TemperatureSensor, MotionSensor
+from Task import TaskScheduler, TaskType
+from CustomJSONEncoder import CustomJSONEncoder
+# from ie.homesec.util.Task import TaskScheduler, TaskType
+# from ie.homesec.util.CustomJSONEncoder import CustomJSONEncoder
+# from ie.homesec.sensor.FakeSensors import TemperatureSensor, MotionSensor
 
 urls = (
     '/',            'IndexHandler',
