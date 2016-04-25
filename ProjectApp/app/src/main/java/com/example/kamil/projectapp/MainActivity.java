@@ -22,13 +22,13 @@ public class MainActivity extends Activity {
         tempButton = (Button)findViewById(R.id.tempButton);
         sensorButton = (Button)findViewById(R.id.sensorButton);
 
-        //Temperature button
+        //TemperatureView button
         tempButton.setOnClickListener(new View.OnClickListener()
         {
             public void onClick(View v)
             {
-                //Make the button click open new activity (Temperature activity)
-                startActivity(new Intent(MainActivity.this, Temperature.class));
+                //Make the button click open new activity (TemperatureView activity)
+                startActivity(new Intent(MainActivity.this, TemperatureView.class));
             }
 
         });

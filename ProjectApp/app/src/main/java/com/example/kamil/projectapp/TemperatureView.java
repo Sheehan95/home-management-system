@@ -21,11 +21,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
-public class Temperature extends Activity {
+public class TemperatureView extends Activity {
 
     private Button getData;
+    private Button backButton;
     private TextView result;
-    private  String res;
+    private Object res;
+    private Temperature t1;
+    private GetResult test;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +38,6 @@ public class Temperature extends Activity {
         getData = (Button)findViewById(R.id.getData);
         result = (TextView)findViewById(R.id.result);
 
-
-
         //Get data Button
         getData.setOnClickListener(new View.OnClickListener()
         {
@@ -44,22 +45,25 @@ public class Temperature extends Activity {
             public void onClick(View v)
             {
 
-                URL url = null;
+               /* URL url = null; */
 
-                try {
+               /* try {
                     url = new URL("http://172.20.10.5:8080/temperature");
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
-                }
+                }*/
 
-                GetResult test = new GetResult();
-                test.execute(url);
+                test = new GetResult();
+                test.execute();
 
 
-                res = null;
+
+                //res = null;
 
                 try {
-                    res = test.get();
+                    test.get().toString();
+                    //t1.toString();
+                   // res = test.get();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
@@ -68,7 +72,7 @@ public class Temperature extends Activity {
 
 
                 //Set up server connection and get data from server.
-                result.setText(res);
+                result.setText(test);
 
 
             }
