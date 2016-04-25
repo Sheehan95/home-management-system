@@ -84,9 +84,6 @@ class mpl:
 
 	    return val
 
-	def test_print(self):
-                print "Working..."
-
 
 #temp_sensor = mpl()
 #temp_sensor.initAlt()

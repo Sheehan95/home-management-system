@@ -11,7 +11,7 @@ class MMA8491Q_DATA(Structure):
 	("Yout", c_int16),
 	("Zout", c_int16)]
 
-class mma8491q:
+class mma:
 	def __init__(self):
 		if (0 == sensor.bcm2835_init()):
 			print "bcm3835 driver init failed."
@@ -58,11 +58,11 @@ class mma8491q:
 		return val
 
 		
-mma = mma8491q()
-mma.init()
-mma.enable()
-while 1:
-	(x, y, z) = mma.getAccelerometer()
-	print "MMA8491Q:\tX.", x, "mg", "\tY.", y, "mg", "\tZ.", z, "mg" 
-	mma.enable()
-	time.sleep(0.5)
+#mma = mma8491q()
+#mma.init()
+#mma.enable()
+#while 1:
+#	(x, y, z) = mma.getAccelerometer()
+#	print "MMA8491Q:\tX.", x, "mg", "\tY.", y, "mg", "\tZ.", z, "mg"
+#	mma.enable()
+#	time.sleep(0.5)

@@ -12,6 +12,7 @@ class CustomJSONEncoder(json.JSONEncoder):
             return {
                 '__type__': 'task',
                 'task_type': obj.task_type,
+                'task_id': obj.task_id,
                 'date': {
                     '__type__': 'datetime',
                     'year': obj.date.year,

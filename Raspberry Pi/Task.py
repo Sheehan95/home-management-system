@@ -56,8 +56,8 @@ class TaskScheduler:
     # removes a task from the scheduler
     def remove_task(self, scheduled_task):
         if scheduled_task in self.scheduled:
-            scheduled_task.cancel()
             self.scheduled.remove(scheduled_task)
+            scheduled_task.cancel()
         else:
             raise TaskNotScheduledError('This task has not been scheduled to run')
 
@@ -65,8 +65,12 @@ class TaskScheduler:
 # a task that can be run at a given time
 class Task:
 
+    counter = 0
+
     def __init__(self, action, date, task_type=TaskType.UNDEFINED, callback=None):
         self.action = action
+        self.task_id = Task.counter
+        Task.counter += 1
         self.task_type = task_type
         self.date = date
         self.callback = callback
@@ -99,7 +103,7 @@ class Task:
             self.timer.cancel()
 
     def __str__(self):
-        return '{0} is set to run at {1}'.format(self.task_type, self.date)
+        return '#{0}: {1} is set to run at {2}'.format(self.task_id, self.task_type, self.date)
 
     def __eq__(self, other):
         if self.task_type == other.task_type and self.date == other.date:

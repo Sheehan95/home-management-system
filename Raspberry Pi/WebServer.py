@@ -1,23 +1,27 @@
 import json
 import threading
 import time
-from datetime import datetime
-
 import web
+import os
+from twython import Twython
+
+from datetime import datetime
+from CustomJSONEncoder import CustomJSONEncoder
+from Task import TaskScheduler, TaskType, InvalidScheduleDateError
 
 from FakeSensors import TemperatureSensor, MotionSensor
-from Task import TaskScheduler, TaskType
-from CustomJSONEncoder import CustomJSONEncoder
-# from ie.homesec.util.Task import TaskScheduler, TaskType
-# from ie.homesec.util.CustomJSONEncoder import CustomJSONEncoder
-# from ie.homesec.sensor.FakeSensors import TemperatureSensor, MotionSensor
 
 urls = (
-    '/',            'IndexHandler',
-    '/Temperature', 'TemperatureHandler',
-    '/Alarm',       'AlarmHandler',
-    '/Schedule',    'ScheduleHandler'
+    '/',                        'IndexHandler',
+    '/Temperature',             'TemperatureHandler',
+    '/Alarm',                   'AlarmHandler',
+    '/Schedule',                'ScheduleHandler',
+    '/Schedule/Cancel/(.*)',    'ScheduleCancelHandler',
+    '/Camera',                  'CameraHandler'
 )
+
+APP_KEY = '7ezAHp8AV4sW2J0xHXlwR5nMX'
+APP_SECRET = 'UlSHZjpQKPyCLIic0MWhynNc0oqZsP8vK3lBcKKEPlKtmIhLCN'
 
 alarm_armed = False
 heating_on = False
@@ -129,7 +133,7 @@ class ScheduleHandler:
         data = json.loads(web.data())
         function = None
 
-        date = datetime.strptime(data['date'], '%a %b %d %H:%M:%S BST %Y')
+        date = datetime.strptime(data['date'], '%d/%m/%Y %H:%M:%S')
         task_type = data['task_type']
 
         if task_type == TaskType.ARM_ALARM:
@@ -141,7 +145,49 @@ class ScheduleHandler:
         elif task_type == TaskType.TURN_OFF_HEATING:
             function = turn_off_heating
 
-        scheduler.add_task(function, date, task_type)
+        try:
+            scheduler.add_task(function, date, task_type)
+        except InvalidScheduleDateError:
+            return web.badrequest()
+
+
+# handles requests to /Schedule/Cancel/{id}
+class ScheduleCancelHandler:
+
+    def __init__(self):
+        print 'Initializing ScheduleCancelHandler...'
+
+    def POST(self, task_id):
+        global scheduler
+
+        for task in scheduler.scheduled:
+
+            task_id = int(task_id)
+
+            print 'Comparing {0} & {1}'.format(task_id, task.task_id)
+            print task
+
+            if task.task_id == task_id:
+                print 'Found it'
+                scheduler.remove_task(task)
+                return
+
+        raise web.notfound()
+
+
+# handles requests to /Camera
+class CameraHandler:
+
+    def __init__(self):
+        print 'Initializing CameraHandler...'
+
+    def GET(self):
+        filename = 'Wildlife.wmv'
+
+#        if filename in os.listdir('../../../captures'):
+#            yield open('../../../captures/{0}'.format(filename), 'rb').read()
+#        else:
+#            raise web.notfound()
 
 
 def arm_alarm():
@@ -191,5 +237,8 @@ if __name__ == "__main__":
     t = threading.Thread(target=entry)
     t.daemon = True
     t.start()
+
+    twitter = Twython(APP_KEY, APP_SECRET)
+    twitter.update_status(status="Hello from Python!")
 
     app.run()
