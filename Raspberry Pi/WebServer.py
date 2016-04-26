@@ -1,5 +1,6 @@
 import json
 import os
+import picamera
 import threading
 import time
 import web
@@ -331,8 +332,15 @@ def monitor():
                 print 'NEW BREAK IN DETECTED'
                 # sets the value for the next pass
                 last_break_in = datetime.now()
+                camera = picamera.PiCamera()
+                camera.capture('capture.png')
+                time.sleep(1)
 
-        time.sleep(10)
+                if os.path.isfile('capture.png'):
+                    capture = open('image.png', 'rb')
+                    capture_id = twitter.upload_media(media=capture)
+                    status = '{0}, there has been a break-in detected in your premises!'.format('@FrankieORiordan')
+                    twitter.update_status(status=status, media_ids=capture_id['media_id'])
 
 
 # equivalent to public static void main
