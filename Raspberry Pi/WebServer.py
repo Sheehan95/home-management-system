@@ -1,31 +1,48 @@
 import json
+import os
 import threading
 import time
 import web
-import os
+
+from CustomJSONEncoder import CustomJSONEncoder
+from datetime import datetime, timedelta
+from FakeSensors import MotionSensor, TemperatureSensor
+from Task import TaskScheduler, TaskType
 from twython import Twython
 
-from datetime import datetime
-from CustomJSONEncoder import CustomJSONEncoder
-from Task import TaskScheduler, TaskType, InvalidScheduleDateError
 
-from FakeSensors import TemperatureSensor, MotionSensor
+# defining twitter keys & tokens
+APP_KEY = '7ezAHp8AV4sW2J0xHXlwR5nMX'
+APP_SECRET = 'UlSHZjpQKPyCLIic0MWhynNc0oqZsP8vK3lBcKKEPlKtmIhLCN'
+OAUTH_TOKEN = '724683684406763520-chyWXTf06o20tziTj7Uy90Fy6Wz0fYg'
+OAUTH_SECRET = 'm94MqZIShE6e9W6BFw9TmXViq11TDxf5MZsYDIU9kdJLU'
+TWITTER_DATA_FILE = 'twitter.txt'
 
+twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_SECRET)
+
+twitter_id = None
+
+
+# defining urls handled by the server
 urls = (
     '/',                        'IndexHandler',
     '/Temperature',             'TemperatureHandler',
     '/Alarm',                   'AlarmHandler',
     '/Schedule',                'ScheduleHandler',
     '/Schedule/Cancel/(.*)',    'ScheduleCancelHandler',
-    '/Camera',                  'CameraHandler'
+    '/Twitter/(.*)',            'TwitterHandler',
+    '/Twitter',                 'TwitterHandler',
+    '/Camera',                  'CameraHandler',
+    '/BreakIn',                 'BreakInHandler'
 )
 
-APP_KEY = '7ezAHp8AV4sW2J0xHXlwR5nMX'
-APP_SECRET = 'UlSHZjpQKPyCLIic0MWhynNc0oqZsP8vK3lBcKKEPlKtmIhLCN'
 
+# defining global variables
 alarm_armed = False
 heating_on = False
+break_in = False
 scheduler = TaskScheduler()
+last_break_in = None
 
 temperature_sensor = TemperatureSensor()
 motion_sensor = MotionSensor()
@@ -34,6 +51,7 @@ motion_sensor = MotionSensor()
 app = web.application(urls, globals())
 
 
+########################################################################################################################
 # handles requests to /
 class IndexHandler:
 
@@ -51,8 +69,14 @@ class IndexHandler:
         for task in scheduler.scheduled:
             schedule += '{0} to run at {1}\n'.format(task.task_type, task.date)
 
-        return 'STATUS:\nAlarm Armed:\t{0}\nHeating On:\t{1}\nScheduled Tasks:\t{2}'.format(
-            alarm_armed, heating_on, schedule)
+        status = 'STATUS:\n\n' \
+                 'Alarm Armed:\t{0}\n' \
+                 'Break In:\t{1}\n' \
+                 'Heating:\t{2}\n' \
+                 'Twitter ID:\t{3}\n' \
+                 'Scheduled:\n{4}'.format(alarm_armed, break_in, heating_on, twitter_id, schedule)
+
+        return status
 
 
 # handles requests to /Temperature
@@ -97,7 +121,11 @@ class AlarmHandler:
     # GET /Alarm
     def GET(self):
         global alarm_armed
-        data = {'alarm_armed': alarm_armed}
+        global break_in
+        data = {
+            'alarm_armed': alarm_armed,
+            'break_in': break_in
+        }
         return json.dumps(data, cls=CustomJSONEncoder)
 
     # POST /Alarm
@@ -107,9 +135,14 @@ class AlarmHandler:
 
         data = json.loads(web.data())
 
+        global alarm_armed
         if 'arm' in data:
-            global alarm_armed
             alarm_armed = data['arm']
+
+        global break_in
+        if 'ack' in data:
+            if data['ack']:
+                break_in = False
 
 
 # handles requests to /Schedule
@@ -145,10 +178,11 @@ class ScheduleHandler:
         elif task_type == TaskType.TURN_OFF_HEATING:
             function = turn_off_heating
 
-        try:
-            scheduler.add_task(function, date, task_type)
-        except InvalidScheduleDateError:
+        # if the date has already occurred or no function has been selected
+        if date <= datetime.now() or function is None:
             return web.badrequest()
+        else:
+            scheduler.add_task(function, date, task_type)
 
 
 # handles requests to /Schedule/Cancel/{id}
@@ -175,6 +209,19 @@ class ScheduleCancelHandler:
         raise web.notfound()
 
 
+# handles requests to /Twitter
+class TwitterHandler:
+
+    def __init__(self):
+        print 'Initializing TwitterHandler...'
+
+    def GET(self):
+        return twitter_id
+
+    def POST(self, new_id):
+        write_twitter_id(new_id)
+
+
 # handles requests to /Camera
 class CameraHandler:
 
@@ -182,63 +229,117 @@ class CameraHandler:
         print 'Initializing CameraHandler...'
 
     def GET(self):
-        filename = 'Wildlife.wmv'
-
-#        if filename in os.listdir('../../../captures'):
-#            yield open('../../../captures/{0}'.format(filename), 'rb').read()
-#        else:
-#            raise web.notfound()
+        print 'Hello'
 
 
+class BreakInHandler:
+
+    def __init__(self):
+        print 'Initializing BreakInHandler...'
+
+    def GET(self):
+        global break_in
+        return break_in
+
+    def POST(self):
+        global break_in
+        break_in = True
+########################################################################################################################
+
+
+# arms the alarm
 def arm_alarm():
     print 'ARMING ALARM'
     global alarm_armed
     alarm_armed = True
 
 
+# disarms the alarm
 def disarm_alarm():
     print 'DISARMING ALARM'
     global alarm_armed
     alarm_armed = False
 
 
+# turns on the heating
 def turn_on_heating():
     print 'turn_on_heating'
     global heating_on
     heating_on = True
 
 
+# turns off the heating
 def turn_off_heating():
     print 'turn_off_heating'
     global heating_on
     heating_on = False
 
 
-def entry():
+# sends a direct message to the user via Twitter
+def twitter_report_break_in():
+    message = 'There was a break-in detected on {0}'.format(datetime.now())
+    twitter.send_direct_message(user_id=twitter_id, text=message)
+
+
+# reads the user's twitter id from the file
+def read_twitter_id():
+    # if the file doesn't exist, create it
+    if not os.path.exists(TWITTER_DATA_FILE):
+        open (TWITTER_DATA_FILE, 'a')
+
+    with open(TWITTER_DATA_FILE, 'r') as f:
+        return f.read()
+
+
+# writes the user's twitter id to the file
+def write_twitter_id(new_id):
+    # if the file doesn't exist, create it
+    if not os.path.exists(TWITTER_DATA_FILE):
+        open(TWITTER_DATA_FILE, 'a')
+
+    with open(TWITTER_DATA_FILE, 'w') as f:
+        f.write(new_id)
+
+    # read the new value into the twitter_id
+    global twitter_id
+    twitter_id = read_twitter_id()
+
+
+# checks to see if a break-in has occurred
+def monitor():
+
+    # allow time for server to start up
+    time.sleep(5)
+
     while True:
-        x = app.request('/Alarm', method='GET')
-        y = json.loads(x.data)
-        print y['alarm_armed']
-        if y['alarm_armed']:
-            print 'BREAK IN DETECTED'
-        else:
-            print 'All is well...'
+        req = app.request('/Alarm', method='GET')
+        data = json.loads(req.data)
 
-        time.sleep(5)
+        if data['break_in']:
+            global last_break_in
 
+            # initializes variable if it hasn't already been set
+            if last_break_in is None:
+                last_break_in = datetime.now()
+                # sets the threshold to a time that has already occurred
+                threshold = datetime.now() - timedelta(hours=1)
+            else:
+                # cannot trigger a break-in unless a minute has elapsed
+                threshold = last_break_in + timedelta(minutes=1)
 
-def get_alarm_status():
-    global alarm_armed
-    return alarm_armed
+            if datetime.now() > threshold:
+                print 'NEW BREAK IN DETECTED'
+                # sets the value for the next pass
+                last_break_in = datetime.now()
+
+        time.sleep(10)
 
 
 # equivalent to public static void main
 if __name__ == "__main__":
-    t = threading.Thread(target=entry)
+    t = threading.Thread(target=monitor)
     t.daemon = True
     t.start()
 
-    twitter = Twython(APP_KEY, APP_SECRET)
-    twitter.update_status(status="Hello from Python!")
-
+    app.request('/Twitter/{0}'.format(read_twitter_id()), method='POST')
     app.run()

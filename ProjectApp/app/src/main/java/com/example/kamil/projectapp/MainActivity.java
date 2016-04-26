@@ -12,41 +12,36 @@ public class MainActivity extends Activity {
 
 
     private Button tempButton;
-    private Button sensorButton;
+    private Button alarmButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tempButton = (Button)findViewById(R.id.tempButton);
-        sensorButton = (Button)findViewById(R.id.sensorButton);
+        tempButton = (Button) findViewById(R.id.temperature_button);
+        alarmButton = (Button) findViewById(R.id.alarm_button);
 
-        //TemperatureView button
+        //TemperatureActivity button
         tempButton.setOnClickListener(new View.OnClickListener()
         {
             public void onClick(View v)
             {
-                //Make the button click open new activity (TemperatureView activity)
-                startActivity(new Intent(MainActivity.this, TemperatureView.class));
+                startActivity(new Intent(MainActivity.this, TemperatureActivity.class));
             }
 
         });
 
-        //Alarm button
-        sensorButton.setOnClickListener(new View.OnClickListener()
+        //AlarmActivity button
+        alarmButton.setOnClickListener(new View.OnClickListener()
         {
             public void onClick(View v)
             {
-                //Make the button click open new activity(Alarm activity)
-                startActivity(new Intent(MainActivity.this, Alarm.class));
+                startActivity(new Intent(MainActivity.this, AlarmActivity.class));
             }
 
 
         });
-
-
-
 
     }
 

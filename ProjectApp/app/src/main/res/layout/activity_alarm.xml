@@ -10,40 +10,29 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Alarm State:"
-        android:id="@+id/alarmStateL"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="52dp" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Alarm Status"
+        android:id="@+id/alarm_status"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
-    <TextView
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="armed/not armed"
-        android:id="@+id/alarmState"
-        android:layout_alignBottom="@+id/alarmStateL"
+        android:text="Arm Alarm"
+        android:id="@+id/arm_alarm_button"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="78dp"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="39dp" />
+        android:layout_alignParentStart="true" />
 
     <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="200px"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Arm"
-        android:id="@+id/armButton"
-        android:layout_marginTop="55dp"
-        android:layout_below="@+id/alarmState"
-        android:layout_alignStart="@+id/alarmState" />
+        android:text="Disarm Alarm"
+        android:id="@+id/disarm_alarm_button"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" />
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="200px"
-        android:layout_height="wrap_content"
-        android:text="Back"
-        android:id="@+id/backButtonAlarm"
-        android:layout_alignTop="@+id/armButton"
-        android:layout_alignStart="@+id/alarmStateL" />
 </RelativeLayout>

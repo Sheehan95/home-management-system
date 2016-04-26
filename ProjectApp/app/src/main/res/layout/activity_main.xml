@@ -6,57 +6,25 @@
     android:layout_height="match_parent">
 
 
-    <RelativeLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
-        android:layout_alignParentEnd="true">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Temperature:"
-            android:id="@+id/temperatureLabel"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="96dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Sensors:"
-            android:id="@+id/sensorsLabel"
-            android:layout_marginTop="55dp"
-            android:layout_below="@+id/tempButton"
-            android:layout_alignStart="@+id/temperatureLabel" />
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true">
 
         <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="250px"
-            android:layout_height="wrap_content"
-            android:text="View Temp"
-            android:id="@+id/tempButton"
-            android:layout_marginStart="50dp"
-            android:layout_alignTop="@+id/temperatureLabel"
-            android:layout_toEndOf="@+id/temperatureLabel" />
-
-        <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="250px"
-            android:layout_height="wrap_content"
-            android:text="View Sensor"
-            android:id="@+id/sensorButton"
-            android:layout_alignTop="@+id/sensorsLabel"
-            android:layout_alignStart="@+id/tempButton" />
-
-        <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true"
-            android:layout_above="@+id/sensorButton"></LinearLayout>
-    </RelativeLayout>
+            android:layout_height="wrap_content"
+            android:text="Temperature"
+            android:id="@+id/temperature_button"
+            android:layout_gravity="center_horizontal" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Alarm"
+            android:id="@+id/alarm_button"
+            android:layout_gravity="center_horizontal" />
+    </LinearLayout>
 </RelativeLayout>

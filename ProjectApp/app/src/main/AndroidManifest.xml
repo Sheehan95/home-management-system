@@ -20,11 +20,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TemperatureView"
+            android:name=".TemperatureActivity"
             android:label="@string/title_activity_temperature"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Alarm"
+            android:name=".AlarmActivity"
             android:label="@string/title_activity_sensor"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
