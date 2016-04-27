@@ -1,0 +1,92 @@
+html{
+	background-color: #ebfaeb;
+	padding-top: 0;
+	margin-top: 0;
+}
+
+body{
+	font-family: "Arial", Helvetica, sans-serif;
+	padding-top: 0;
+	padding-left: 0;
+	padding-right: 0;
+    margin-top: 0;
+	margin-left: 0;
+	margin-right: 0;
+}
+
+#banner{
+	background-color: #2eb82e;
+	margin-top: 0;
+	margin-bottom: 10px;
+	border-bottom: thin solid #1b4b1b;
+	height: 45px;
+}
+
+h2{
+	color: white;
+	width:30%;
+	height: 45px;
+	line-height: 45px;
+	text-align: center;
+	position:absolute;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+}
+
+table{
+	border: thin solid #1b4b1b; 
+	border-radius: 0.05%;
+	margin: auto; 
+}
+
+tr{
+	
+}
+
+th{
+	background-color: #79d279;
+	color: #1b4b1b;
+}
+
+td{
+	background-color: #d9f2d9;
+	text-align: right;
+}
+
+.editable:hover{
+	background-color: #ebfaeb;
+}
+
+.tableText{
+	padding: 2.5%;
+}
+
+.delete:hover, .save:hover{
+	cursor: pointer; 
+}
+
+.delete, .save{
+	margin: 10px;
+}
+
+#user{
+	color: white;
+	width:10%;
+	height: 45px;
+	text-align: center;
+	position:absolute;
+	left: 90%;
+	right: 0;
+}
+
+#user:hover{
+	cursor: pointer; 
+	background-color: #009900;
+}
+
+#user img{
+	padding-right: 10px;
+}
+
+

@@ -1,0 +1,6 @@
+-Delete rows
+-Edit rows
+-Search rows
+-Login
+-Notify of break in/High temperature/High Motion
+-Send email/sms/social media message
