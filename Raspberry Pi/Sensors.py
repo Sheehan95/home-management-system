@@ -19,13 +19,17 @@ class MotionSensor:
 
     def __init__(self):
         self.cords = {'x': 0, 'y': 0, 'z': 0}
+        self.init_cords = {'x': 0, 'y': 0, 'z': 0}
         self.sensor = mma()
         self.sensor.init()
         self.sensor.enable()
+
+        self.init_cords = self.get_cords()
 
     def get_cords(self):
         (x, y, z) = self.sensor.getAccelerometer()
         self.cords['x'] = x
         self.cords['y'] = y
         self.cords['z'] = z
+        self.sensor.enable()
         return self.cords

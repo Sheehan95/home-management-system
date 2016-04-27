@@ -20,7 +20,7 @@ TWITTER_DATA_FILE = 'twitter.txt'
 
 twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_SECRET)
 
-twitter_id = None
+twitter_handle = None
 
 
 # defining urls handled by the server
@@ -73,7 +73,7 @@ class IndexHandler:
                  'Break In:\t{1}\n' \
                  'Heating:\t{2}\n' \
                  'Twitter ID:\t{3}\n' \
-                 'Scheduled:\n{4}'.format(alarm_armed, break_in, heating_on, twitter_id, schedule)
+                 'Scheduled:\n{4}'.format(alarm_armed, break_in, heating_on, twitter_handle, schedule)
 
         return status
 
@@ -215,7 +215,7 @@ class TwitterHandler:
         print '[INFO]: Initializing TwitterHandler...'
 
     def GET(self):
-        return twitter_id
+        return twitter_handle
 
     def POST(self, new_id):
         write_twitter_id(new_id)
@@ -273,12 +273,6 @@ def turn_off_heating():
     heating_on = False
 
 
-# sends a direct message to the user via Twitter
-def twitter_report_break_in():
-    message = 'There was a break-in detected on {0}'.format(datetime.now())
-    twitter.send_direct_message(user_id=twitter_id, text=message)
-
-
 # reads the user's twitter id from the file
 def read_twitter_id():
     # if the file doesn't exist, create it
@@ -299,8 +293,8 @@ def write_twitter_id(new_id):
         f.write(new_id)
 
     # read the new value into the twitter_id
-    global twitter_id
-    twitter_id = read_twitter_id()
+    global twitter_handle
+    twitter_handle = read_twitter_id()
 
 
 # checks to see if a break-in has occurred
@@ -332,17 +326,41 @@ def monitor():
                 if os.path.isfile('capture.png'):
                     capture = open('capture.png', 'rb')
                     capture_id = twitter.upload_media(media=capture)
-                    status = '{0}, there has been a break-in detected in your premises!'.format('@FrankieORiordan')
+                    handle = app.request('/Twitter', method='GET').data
+                    status = '{0}, there has been a break-in detected in your premises!'.format(handle)
                     twitter.update_status(status=status, media_ids=capture_id['media_id'])
 
         time.sleep(5)
 
 
+# checks to see if a break-in has occurred
+# def motion():
+#
+#     time.sleep(5)  # allows the server time to start up
+#
+#     while True:
+#         cords = motion_sensor.get_cords()
+#
+#         diff = dict()
+#         diff['x'] = abs(cords['x'] - motion_sensor.init_cords['x'])
+#         diff['y'] = abs(cords['y'] - motion_sensor.init_cords['y'])
+#         diff['z'] = abs(cords['z'] - motion_sensor.init_cords['z'])
+#
+#         if diff['x'] > 100 or diff['y'] > 100 or diff['z'] > 100:
+#             app.request('/BreakIn', method='POST')
+#
+#         time.sleep(5)
+
+
 # equivalent to public static void main
 if __name__ == "__main__":
-    t = threading.Thread(target=monitor)
-    t.daemon = True
-    t.start()
+    monitor_thread = threading.Thread(target=monitor)
+    monitor_thread.daemon = True
+    monitor_thread.start()
+
+    # motion_thread = threading.Thread(target=motion)
+    # motion_thread.daemon = True
+    # motion_thread.start()
 
     app.request('/Twitter/{0}'.format(read_twitter_id()), method='POST')
     app.run()
