@@ -1,6 +1,5 @@
 import json
 import os
-import picamera
 import threading
 import time
 import web
@@ -26,15 +25,15 @@ twitter_id = None
 
 # defining urls handled by the server
 urls = (
-    '/',                        'IndexHandler',
-    '/Temperature',             'TemperatureHandler',
-    '/Alarm',                   'AlarmHandler',
-    '/Schedule',                'ScheduleHandler',
-    '/Schedule/Cancel/(.*)',    'ScheduleCancelHandler',
-    '/Twitter/(.*)',            'TwitterHandler',
-    '/Twitter',                 'TwitterHandler',
-    '/Camera',                  'CameraHandler',
-    '/BreakIn',                 'BreakInHandler'
+    '/',                        'IndexHandler',                 # general server status
+    '/Temperature',             'TemperatureHandler',           # temperature & heating
+    '/Alarm',                   'AlarmHandler',                 # alarm & break-in status
+    '/Schedule',                'ScheduleHandler',              # schedules tasks to run
+    '/Schedule/Cancel/(.*)',    'ScheduleCancelHandler',        # cancels scheduled tasks
+    '/Twitter/(.*)',            'TwitterHandler',               # sets a new Twitter username
+    '/Twitter',                 'TwitterHandler',               # retrieves the Twitter username
+    '/Camera',                  'CameraHandler',                # activates the camera
+    '/BreakIn',                 'BreakInHandler'                # simulates a break-in
 )
 
 
@@ -52,12 +51,11 @@ motion_sensor = MotionSensor()
 app = web.application(urls, globals())
 
 
-########################################################################################################################
 # handles requests to /
 class IndexHandler:
 
     def __init__(self):
-        print 'Initializing IndexHandler...'
+        print '[INFO]: Initializing IndexHandler...'
 
     # GET /
     def GET(self):
@@ -84,13 +82,13 @@ class IndexHandler:
 class TemperatureHandler:
 
     def __init__(self):
-        print 'Initializing TemperatureHandler...'
+        print '[INFO]: Initializing TemperatureHandler...'
 
     # GET /Temperature
     def GET(self):
         global heating_on
 
-        temperature = temperature_sensor.temperature
+        temperature = temperature_sensor.get_temp()
         date = datetime.now()
 
         data = {
@@ -117,7 +115,7 @@ class TemperatureHandler:
 class AlarmHandler:
 
     def __init__(self):
-        print 'Initializing AlarmHandler...'
+        print '[INFO]: Initializing AlarmHandler...'
 
     # GET /Alarm
     def GET(self):
@@ -150,7 +148,7 @@ class AlarmHandler:
 class ScheduleHandler:
 
     def __init__(self):
-        print 'Initializing ScheduleHandler'
+        print '[INFO]: Initializing ScheduleHandler'
 
     # GET /Schedule
     def GET(self):
@@ -190,7 +188,7 @@ class ScheduleHandler:
 class ScheduleCancelHandler:
 
     def __init__(self):
-        print 'Initializing ScheduleCancelHandler...'
+        print '[INFO]: Initializing ScheduleCancelHandler...'
 
     def POST(self, task_id):
         global scheduler
@@ -214,7 +212,7 @@ class ScheduleCancelHandler:
 class TwitterHandler:
 
     def __init__(self):
-        print 'Initializing TwitterHandler...'
+        print '[INFO]: Initializing TwitterHandler...'
 
     def GET(self):
         return twitter_id
@@ -227,7 +225,7 @@ class TwitterHandler:
 class CameraHandler:
 
     def __init__(self):
-        print 'Initializing CameraHandler...'
+        print '[INFO]: Initializing CameraHandler...'
 
     def GET(self):
         print 'Hello'
@@ -236,7 +234,7 @@ class CameraHandler:
 class BreakInHandler:
 
     def __init__(self):
-        print 'Initializing BreakInHandler...'
+        print '[INFO]: Initializing BreakInHandler...'
 
     def GET(self):
         global break_in
@@ -245,33 +243,32 @@ class BreakInHandler:
     def POST(self):
         global break_in
         break_in = True
-########################################################################################################################
 
 
 # arms the alarm
 def arm_alarm():
-    print 'ARMING ALARM'
+    print '[INFO]: ARMING ALARM'
     global alarm_armed
     alarm_armed = True
 
 
 # disarms the alarm
 def disarm_alarm():
-    print 'DISARMING ALARM'
+    print '[INFO]: DISARMING ALARM'
     global alarm_armed
     alarm_armed = False
 
 
 # turns on the heating
 def turn_on_heating():
-    print 'turn_on_heating'
+    print '[INFO]: TURNING HEATING ON'
     global heating_on
     heating_on = True
 
 
 # turns off the heating
 def turn_off_heating():
-    print 'turn_off_heating'
+    print '[INFO]: TURNING HEATING OFF'
     global heating_on
     heating_on = False
 
@@ -309,8 +306,7 @@ def write_twitter_id(new_id):
 # checks to see if a break-in has occurred
 def monitor():
 
-    # allow time for server to start up
-    time.sleep(5)
+    time.sleep(5)  # allows the server time to start up
 
     while True:
         req = app.request('/Alarm', method='GET')
@@ -319,29 +315,27 @@ def monitor():
         if data['break_in']:
             global last_break_in
 
-            # initializes variable if it hasn't already been set
             if last_break_in is None:
-                last_break_in = datetime.now()
-                # sets the threshold to a time that has already occurred
-                threshold = datetime.now() - timedelta(hours=1)
+                last_break_in = datetime.now()  # initializes variable if it hasn't already been set
+                threshold = datetime.now() - timedelta(hours=1)  # sets threshold to a time that has already occurred
             else:
-                # cannot trigger a break-in unless a minute has elapsed
-                threshold = last_break_in + timedelta(minutes=1)
+                threshold = last_break_in + timedelta(minutes=1)  # cannot trigger a break-in unless a minute has passed
 
             if datetime.now() > threshold:
-                print 'NEW BREAK IN DETECTED'
-                # sets the value for the next pass
-                last_break_in = datetime.now()
-                camera = picamera.PiCamera()
-                camera.capture('capture.png')
-                camera.close()
-                time.sleep(1)
+                print '[INFO]: NEW BREAK IN DETECTED'
+                last_break_in = datetime.now()  # sets the value for the next pass
+                # camera = picamera.PiCamera()
+                # camera.capture('capture.png')
+                # camera.close()
+                # time.sleep(1)
 
                 if os.path.isfile('capture.png'):
                     capture = open('capture.png', 'rb')
                     capture_id = twitter.upload_media(media=capture)
                     status = '{0}, there has been a break-in detected in your premises!'.format('@FrankieORiordan')
                     twitter.update_status(status=status, media_ids=capture_id['media_id'])
+
+        time.sleep(5)
 
 
 # equivalent to public static void main

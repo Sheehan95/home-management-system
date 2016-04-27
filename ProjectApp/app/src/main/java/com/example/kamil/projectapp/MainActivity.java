@@ -10,7 +10,6 @@ import android.widget.Button;
 
 public class MainActivity extends Activity {
 
-
     private Button tempButton;
     private Button alarmButton;
 
@@ -29,7 +28,6 @@ public class MainActivity extends Activity {
             {
                 startActivity(new Intent(MainActivity.this, TemperatureActivity.class));
             }
-
         });
 
         //AlarmActivity button
@@ -39,8 +37,6 @@ public class MainActivity extends Activity {
             {
                 startActivity(new Intent(MainActivity.this, AlarmActivity.class));
             }
-
-
         });
 
     }

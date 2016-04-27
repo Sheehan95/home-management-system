@@ -8,6 +8,8 @@ class TemperatureSensor:
 
     def get_temp(self):
         self.temperature = random.random()
+        self.temperature *= 100
+        self.temperature = round(self.temperature, 2)
         return self.temperature
 
 
