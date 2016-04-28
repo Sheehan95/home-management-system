@@ -13,14 +13,16 @@
 	} 
 
 	mysqli_select_db($conn, $dbname);
-	// sql to create table
-	$sql = "CREATE TABLE IPs (
-	id INT PRIMARY KEY, pi_ip VARCHAR(16)
+
+	$sql = "CREATE TABLE User_Info (
+	id INT, username VARCHAR(16), password VARCHAR(16),
+	PRIMARY KEY(id),
+	FOREIGN KEY(id) REFERENCES IPs(id)
 	)";
 	mysqli_query($conn, $sql);
-	
+
 	mysqli_close($conn);
 	
-	header("Location: addValues.php");
+	header("Location: insertInputs.php");
 
 ?>

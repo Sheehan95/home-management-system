@@ -5,28 +5,30 @@
 	$password = "";
 	$dbname = "raspberry";
 	
-	$link = "createTable.php";
-	
     // Create connection
-	$conn = mysql_connect($servername, $username, $password);
+	$conn = mysqli_connect($servername, $username, $password);
 	 // Check connection
 	if (! $conn) {
-		die("Connection failed: " . mysql_error());
+		die("Connection failed: " . mysqli_error($conn));
 	}
    
 	echo 'Connected successfully';
    
-	$sql = 'CREATE Database raspberry';
-	$create = mysql_query($sql, $conn);
+	$sql = "CREATE Database raspberry";
+	$create = mysqli_query($conn, $sql);
    
 	if(! $create ) {
-		die('Could not create database: ' . mysql_error());
+
+		echo "Failed";
+		header("Location: option.php");
+	}
+	else {
+
+		mysqli_close($conn);
+	
+		header("Location: createTable.php");
 	}
    
-	echo "Database ".$dbname." created successfully\n";
-	
-	mysql_close($conn);
-	
-	echo nl2br ("\n<a href=".$link.">Next</a>");
+	//echo "Database ".$dbname." created successfully\n";
 	
 ?>

@@ -13,14 +13,11 @@
 	} 
 
 	mysqli_select_db($conn, $dbname);
-	// sql to create table
-	$sql = "CREATE TABLE IPs (
-	id INT PRIMARY KEY, pi_ip VARCHAR(16)
-	)";
+	$sql = "INSERT INTO IPs (id, pi_ip)
+	VALUES ('1', 'localhost:8080');";
 	mysqli_query($conn, $sql);
-	
-	mysqli_close($conn);
-	
-	header("Location: addValues.php");
 
+	mysqli_close($conn);
+
+	header("Location: createTemperatureTables.php");
 ?>

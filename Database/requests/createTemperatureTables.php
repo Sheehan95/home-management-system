@@ -13,14 +13,16 @@
 	} 
 
 	mysqli_select_db($conn, $dbname);
-	// sql to create table
-	$sql = "CREATE TABLE IPs (
-	id INT PRIMARY KEY, pi_ip VARCHAR(16)
+
+	$sql = "CREATE TABLE Temperature (
+	id INT, temp VARCHAR(50), date TIMESTAMP,
+	PRIMARY KEY(id, date),
+	FOREIGN KEY(id) REFERENCES IPs(id)
 	)";
 	mysqli_query($conn, $sql);
-	
+
 	mysqli_close($conn);
 	
-	header("Location: addValues.php");
+	header("Location: createUserTables.php");
 
 ?>
