@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.kamil.projectapp">
 
+    <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
@@ -45,7 +46,7 @@
             android:theme="@style/AppTheme"/>
         
         <service
-            android:name="com.example.kamil.services.DocService"
+            android:name="com.example.kamil.services.MonitorService"
             android:enabled="true"/>
 
     </application>

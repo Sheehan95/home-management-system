@@ -11,7 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.kamil.services.DocService;
+import com.example.kamil.services.MonitorService;
 
 /**
  * The main home of the Application. Contains a link to all other activities.
@@ -33,7 +33,7 @@ public class HomeActivity extends Activity {
         scheduleButton = (Button) findViewById(R.id.schedule_button);
         twitterButton = (Button) findViewById(R.id.twitter_button);
 
-        startService(new Intent(HomeActivity.this, DocService.class));
+        startService(new Intent(HomeActivity.this, MonitorService.class));
 
         // TemperatureActivity button
         temperatureButton.setOnClickListener(new View.OnClickListener()
@@ -77,6 +77,7 @@ public class HomeActivity extends Activity {
                 notification.setSmallIcon(R.drawable.logo);
                 notification.setContentTitle("BREAK IN");
                 notification.setContentText("There has been a break-in in your area");
+                notification.setVibrate(new long[]{1000, 1000, 1000});
 
                 Intent resultIntent = new Intent(HomeActivity.this, TwitterActivity.class);
                 TaskStackBuilder stackBuilder = TaskStackBuilder.create(HomeActivity.this);
