@@ -14,21 +14,62 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
-    <Button
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Temperature"
-        android:id="@+id/temperature_button"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Login"
+        android:id="@+id/label_login"
         android:layout_below="@+id/logo_view"
+        android:layout_centerHorizontal="true"
+        android:textSize="40sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Username"
+        android:id="@+id/label_username"
+        android:layout_below="@+id/label_login"
         android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_marginTop="40dp"
+        android:layout_marginRight="20dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/user_input"
+        android:layout_alignBottom="@+id/label_username"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/label_username" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Password"
+        android:id="@+id/label_password"
+        android:layout_below="@+id/label_username"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="50dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/password_input"
+        android:layout_alignBottom="@+id/label_password"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/label_username" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Alarm"
-        android:id="@+id/alarm_button"
-        android:layout_below="@+id/temperature_button"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true" />
+        android:text="Login"
+        android:id="@+id/button_login"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true" />
+
 </RelativeLayout>

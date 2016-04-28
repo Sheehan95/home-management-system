@@ -9,22 +9,15 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Handles all HTTP requests being made from the App.
+ */
 public class HTTPRequestHandler {
-
-    public final static String TASKTYPE_UNDEFINED = "undefined";
-    public final static String TASKTYPE_ARM_ALARM = "arm_alarm";
-    public final static String TASKTYPE_DISARM_ALARM = "disarm_alarm";
-    public final static String TASKTYPE_TURN_ON_HEATING = "turn_on_heating";
-    public final static String TASKTYPE_TURN_OFF_HEATING = "turn_off_heating";
 
     public final static String ENDPOINT_INDEX = "/";
     public final static String ENDPOINT_TEMPERATURE = "/Temperature";
@@ -35,13 +28,36 @@ public class HTTPRequestHandler {
     public final static String ENDPOINT_CAMERA = "/Camera";
     public final static String ENDPOINT_BREAKIN = "/BreakIn";
 
-    private String domain;
 
-    public HTTPRequestHandler(String domain){
-        this.domain = domain;
+    private static String domain;
+    private static HTTPRequestHandler instance = null;
+
+
+    private HTTPRequestHandler(){}
+
+    public static HTTPRequestHandler getInstance(){
+        if (instance == null){
+            instance = new HTTPRequestHandler();
+        }
+        return instance;
     }
 
 
+    /**
+     *
+     *
+     * @param domain
+     */
+    public static void setDomain(String domain){
+        HTTPRequestHandler.domain = domain;
+    }
+
+
+    /**
+     * Gets the current temperature from the Raspberry Pi.
+     *
+     * @return the current temperature
+     */
     public JSONObject getTemperature(){
 
         JSONObject json = null;
@@ -74,6 +90,11 @@ public class HTTPRequestHandler {
 
     }
 
+    /**
+     * Turns the heating on or off on the Raspberry Pi.
+     *
+     * @param heatingOn true to turn the heating on, false to turn it off
+     */
     public void postTemperature(boolean heatingOn){
 
         JSONObject json = null;
@@ -112,6 +133,11 @@ public class HTTPRequestHandler {
     }
 
 
+    /**
+     * Gets a list of all scheduled tasks from the Raspberry Pi.
+     *
+     * @return a list of scheduled tasks
+     */
     public JSONArray getScheduled(){
 
         JSONArray json = null;
@@ -140,246 +166,129 @@ public class HTTPRequestHandler {
             Log.e("ERROR", "JSON EXCEPTION ON: " + e.toString());
         }
 
-        Log.e("JSON", json.toString());
         return json;
 
     }
 
-//    /**
-//     * Sends a HTTP POST request to the endpoint {@link #ENDPOINT_TEMPERATURE}.
-//     *
-//     * @param data to be POSTed to the server
-//     * @return a response from the server
-//     */
-//    public String postTemperature(String data){
-//
-//        HttpURLConnection connection;
-//        StringBuffer response = new StringBuffer();
-//
-//        try {
-//
-//            connection = getConnection(ENDPOINT_TEMPERATURE);
-//            connection.setRequestMethod("POST");
-//            connection.setDoOutput(true);
-//
-//            JSONObject json = new JSONObject();
-//            json.put("name",  data);
-//
-//            DataOutputStream output = new DataOutputStream(connection.getOutputStream());
-//            output.writeBytes(json.toString());
-//            output.flush();
-//            output.close();
-//
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-//            String nextLine = null;
-//
-//            while ((nextLine = reader.readLine()) != null){
-//                response.append(nextLine);
-//            }
-//
-//
-//        } catch (MalformedURLException e){
-//            System.out.println("MALFORMED URL EXCEPTION OCCURED ON: " + e.toString());
-//        } catch (IOException e){
-//            System.out.println("IO EXCEPTION OCCURED ON: " + e.toString());
-//        }
-//
-//        return response.toString();
-//
-//    }
-//
-//
-//
-//    /**
-//     * Sends a HTTP GET request to the endpoint {@link #ENDPOINT_TEMPERATURE}.
-//     *
-//     * @return a response from the server
-//     */
-//    public String getAlarmStatus(){
-//
-//        HttpURLConnection connection;
-//        StringBuffer response = new StringBuffer();
-//
-//        try {
-//
-//            connection = getConnection(ENDPOINT_ALARM);
-//            connection.setRequestMethod("GET");
-//
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-//            String nextLine = null;
-//
-//            while ((nextLine = reader.readLine()) != null){
-//                response.append(nextLine);
-//            }
-//
-//
-//        } catch (MalformedURLException e){
-//            System.out.println("MALFORMED URL EXCEPTION OCCURED ON: " + e.toString());
-//        } catch (IOException e){
-//            System.out.println("IO EXCEPTION OCCURED ON: " + e.toString());
-//        }
-//
-//        return response.toString();
-//
-//    }
-//
-//    /**
-//     * Sends a HTTP POST request to the endpoint {@link #ENDPOINT_TEMPERATURE}.
-//     *
-//     * @param data to be POSTed to the server
-//     * @return a response from the server
-//     */
-//    public String postAlarmStatus(boolean arm){
-//
-//        HttpURLConnection connection;
-//        StringBuffer response = new StringBuffer();
-//
-//        try {
-//
-//            connection = getConnection(ENDPOINT_ALARM);
-//            connection.setRequestMethod("POST");
-//            connection.setDoOutput(true);
-//
-//            JSONObject json = new JSONObject();
-//            json.put("arm", arm);
-//
-//            DataOutputStream output = new DataOutputStream(connection.getOutputStream());
-//            output.writeBytes(json.toString());
-//            output.flush();
-//            output.close();
-//
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-//            String nextLine = null;
-//
-//            while ((nextLine = reader.readLine()) != null){
-//                response.append(nextLine);
-//            }
-//
-//
-//        } catch (MalformedURLException e){
-//            System.out.println("MALFORMED URL EXCEPTION OCCURED ON: " + e.toString());
-//        } catch (IOException e){
-//            System.out.println("IO EXCEPTION OCCURED ON: " + e.toString());
-//        }
-//
-//        return response.toString();
-//
-//    }
-//
-//
-//
-//    /**
-//     * Sends a HTTP POST request to the endpoint {@link #ENDPOINT_TEMPERATURE}.
-//     *
-//     * @param data to be POSTed to the server
-//     * @return a response from the server
-//     */
-//    public String postSchedule(String type){
-//
-//        HttpURLConnection connection;
-//        StringBuffer response = new StringBuffer();
-//
-//        try {
-//
-//            connection = getConnection("http://localhost:8080/Schedule");
-//            connection.setRequestMethod("POST");
-//            connection.setDoOutput(true);
-//
-//            Calendar cal = Calendar.getInstance();
-//            cal.setTime(new Date());
-//            cal.add(Calendar.SECOND, 10);
-//
-//            JSONObject json = new JSONObject();
-//            json.put("task_type",  type);
-//            json.put("date", cal.getTime());
-//
-//
-//            DataOutputStream output = new DataOutputStream(connection.getOutputStream());
-//            output.writeBytes(json.toString());
-//            output.flush();
-//            output.close();
-//
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-//            String nextLine = null;
-//
-//            while ((nextLine = reader.readLine()) != null){
-//                response.append(nextLine);
-//            }
-//
-//
-//        } catch (MalformedURLException e){
-//            System.out.println("MALFORMED URL EXCEPTION OCCURED ON: " + e.toString());
-//        } catch (IOException e){
-//            System.out.println("IO EXCEPTION OCCURED ON: " + e.toString());
-//        }
-//
-//        return response.toString();
-//
-//    }
-//
-//
-//
-//    /**
-//     * Sends a HTTP GET request to the endpoint {@link #ENDPOINT_TEMPERATURE}.
-//     *
-//     * @return a response from the server
-//     */
-//    public String getSchedule(){
-//
-//        HttpURLConnection connection;
-//        StringBuffer response = new StringBuffer();
-//
-//        try {
-//
-//            connection = getConnection("http://localhost:8080/Schedule");
-//            connection.setRequestMethod("GET");
-//
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-//            String nextLine = null;
-//
-//            while ((nextLine = reader.readLine()) != null){
-//                response.append(nextLine);
-//            }
-//
-//
-//        } catch (MalformedURLException e){
-//            System.out.println("MALFORMED URL EXCEPTION OCCURED ON: " + e.toString());
-//        } catch (IOException e){
-//            System.out.println("IO EXCEPTION OCCURED ON: " + e.toString());
-//        }
-//
-//        return response.toString();
-//
-//    }
-//
-//
+    /**
+     * Adds a new task that's scheduled to run on the Raspberry Pi.
+     *
+     * @param taskType the type of task to run
+     * @param date for the task to execute in the format DD/MM/YYYY HH:MM:SS
+     * @throws IOException if an error occurs while connecting to the Raspberry Pi
+     * @throws JSONException if there's an error in parsing the result
+     */
+    public void postSchedule(String taskType, String date) throws IOException, JSONException {
+
+        JSONObject json = null;
+        HttpURLConnection connection = null;
+        StringBuffer response = new StringBuffer();
+
+        connection = (HttpURLConnection) new URL(String.format("http://%s:8080%s", domain, ENDPOINT_SCHEDULE)).openConnection();
+        connection.setRequestMethod("POST");
+        connection.setDoOutput(true);
+
+        json = new JSONObject();
+        json.put("task_type", taskType);
+        json.put("date", date);
+
+        DataOutputStream output = new DataOutputStream(connection.getOutputStream());
+        output.writeBytes(json.toString());
+        output.flush();
+        output.close();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String nextLine = null;
+
+        while ((nextLine = reader.readLine()) != null){
+            response.append(nextLine);
+        }
+
+    }
 
     /**
-     * Parses a JSON object to an object of type Date.
+     * Cancels a task that's scheduled to run on the Raspberry Pi.
      *
-     * @param date a JSON date object to parse
-     * @return the date described by the JSON, or null if parsing fails
+     * @param taskId the id of the task to cancel
+     * @throws IOException if an error occurs while connecting to the Raspberry Pi
+     * @throws JSONException if there's an error in parsing the result
      */
-    private Date parseToDate(JSONObject date){
+    public void postCancelSchedule(int taskId) throws IOException, JSONException {
 
-        Calendar calendar = null;
+        HttpURLConnection connection = null;
+        StringBuffer response = new StringBuffer();
+
+        connection = (HttpURLConnection) new URL(String.format("http://%s:8080%s/%d", domain, ENDPOINT_SCHEDULE_CANCEL, taskId)).openConnection();
+        connection.setRequestMethod("POST");
+        connection.setDoOutput(true);
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String nextLine = null;
+
+        while ((nextLine = reader.readLine()) != null){
+            response.append(nextLine);
+        }
+
+    }
+
+
+    /**
+     * Gets the current Twitter Handle stored in the Raspberry Pi.
+     *
+     * @return a Twitter Handle
+     */
+    public String getTwitterHandle(){
+
+        String result = "";
+        HttpURLConnection connection = null;
+        StringBuffer response = new StringBuffer();
 
         try {
 
-            calendar = GregorianCalendar.getInstance();
-            calendar.set(Calendar.HOUR, date.getInt("hour"));
-            calendar.set(Calendar.MINUTE, date.getInt("minute"));
-            calendar.set(Calendar.SECOND, date.getInt("second"));
-            calendar.set(Calendar.MILLISECOND, date.getInt("microsecond"));
-            calendar.set(Calendar.DAY_OF_MONTH, date.getInt("day") - 1);
-            calendar.set(Calendar.MONTH, date.getInt("month") - 1);
-            calendar.set(Calendar.YEAR, date.getInt("year"));
+            connection = (HttpURLConnection) new URL(String.format("http://%s:8080%s", domain, ENDPOINT_TWITTER)).openConnection();
+            connection.setRequestMethod("GET");
 
-        } catch (JSONException e){
-            return null;
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String nextLine = null;
+
+            while ((nextLine = reader.readLine()) != null){
+                response.append(nextLine);
+            }
+
+            result = response.toString();
+
+        } catch (MalformedURLException e){
+            Log.e("ERROR", "MALFORMED URL EXCEPTION OCCURRED ON: " + e.toString());
+        } catch (IOException e){
+            Log.e("ERROR", "IO EXCEPTION OCCURRED ON: " + e.toString());
         }
 
-        return calendar.getTime();
+        return result;
+
+    }
+
+    /**
+     * Sets a new Twitter Handle on the Raspberry Pi.
+     *
+     * @param twitterHandle the new Twitter Handle
+     * @throws IOException if an error occurs while connecting to the Raspberry Pi
+     * @throws JSONException if there's an error in parsing the result
+     */
+    public void postTwitterHandle(String twitterHandle) throws IOException, JSONException {
+
+        HttpURLConnection connection = null;
+        StringBuffer response = new StringBuffer();
+
+        connection = (HttpURLConnection) new URL(String.format("http://%s:8080%s/%s", domain, ENDPOINT_TWITTER, twitterHandle)).openConnection();
+        connection.setRequestMethod("POST");
+        connection.setDoOutput(true);
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String nextLine = null;
+
+        while ((nextLine = reader.readLine()) != null){
+            response.append(nextLine);
+        }
 
     }
 

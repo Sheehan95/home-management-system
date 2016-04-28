@@ -3,39 +3,54 @@ package com.example.kamil.projectapp;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
+/**
+ * Application entry point.
+ */
 public class MainActivity extends Activity {
 
-    private Button tempButton;
-    private Button alarmButton;
+    private Button loginButton;
+    private EditText userInput;
+    private EditText passInput;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tempButton = (Button) findViewById(R.id.temperature_button);
-        alarmButton = (Button) findViewById(R.id.alarm_button);
+        loginButton = (Button) findViewById(R.id.button_login);
+        userInput = (EditText) findViewById(R.id.user_input);
+        passInput = (EditText) findViewById(R.id.password_input);
 
-        //TemperatureActivity button
-        tempButton.setOnClickListener(new View.OnClickListener()
-        {
-            public void onClick(View v)
-            {
-                startActivity(new Intent(MainActivity.this, TemperatureActivity.class));
-            }
-        });
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String username = userInput.getText().toString();
+                String password = passInput.getText().toString();
 
-        //AlarmActivity button
-        alarmButton.setOnClickListener(new View.OnClickListener()
-        {
-            public void onClick(View v)
-            {
-                startActivity(new Intent(MainActivity.this, AlarmActivity.class));
+                String message = "";
+
+                if (username.isEmpty()){
+                    message = "Please enter a username";
+                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+                    return;
+                }
+                else if (password.isEmpty()){
+                    message = "Please enter a password";
+                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                HTTPRequestHandler.setDomain("10.73.3.155");
+                startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+
             }
         });
 

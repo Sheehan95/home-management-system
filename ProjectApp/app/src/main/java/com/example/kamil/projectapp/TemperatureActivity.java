@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.kamil.model.Task;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -96,7 +98,7 @@ public class TemperatureActivity extends Activity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            HTTPRequestHandler requestHandler = new HTTPRequestHandler("10.73.3.155");
+            HTTPRequestHandler requestHandler = HTTPRequestHandler.getInstance();
             requestHandler.postTemperature(!heatingOn);
             return null;
         }
@@ -116,7 +118,7 @@ public class TemperatureActivity extends Activity {
 
         @Override
         protected JSONObject doInBackground(Void... params) {
-            HTTPRequestHandler req = new HTTPRequestHandler("10.73.3.155");
+            HTTPRequestHandler req = HTTPRequestHandler.getInstance();
             return req.getTemperature();
         }
 
@@ -171,7 +173,7 @@ public class TemperatureActivity extends Activity {
 
         @Override
         protected JSONArray doInBackground(Void... params) {
-            HTTPRequestHandler req = new HTTPRequestHandler("10.73.3.155");
+            HTTPRequestHandler req = HTTPRequestHandler.getInstance();
             return req.getScheduled();
         }
 
@@ -182,7 +184,7 @@ public class TemperatureActivity extends Activity {
                 for (int i = 0 ; i < jsonArray.length() ; i++){
                     JSONObject json = jsonArray.getJSONObject(i);
 
-                    if (json.getString("task_type").equals(HTTPRequestHandler.TASKTYPE_TURN_ON_HEATING)){
+                    if (json.getString("task_type").equals(Task.TASKTYPE_TURN_ON_HEATING)){
                         heatingScheduledLabel.setText(R.string.label_heating_scheduled);
                         Date date = parseToDate(json.getJSONObject("date"));
                         heatingScheduledResult.setText(date.toString());
