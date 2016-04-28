@@ -42,25 +42,25 @@ public class AlarmActivity extends Activity {
         armButton = (Button) findViewById(R.id.arm_alarm_button);
         breakInButton = (Button)findViewById(R.id.breakInButton);
 
-        // new GetAlarmStatus().execute();
-
-        //Arm Button - arms alarm
+        // Arm Button - arms alarm
         armButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
                 new ArmAlarm().execute();
-                Toast.makeText(AlarmActivity.this, "Break in Acknowledged", Toast.LENGTH_SHORT).show();
             }
         });
 
         breakInButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
                 new BreakInWatch().execute();
-
+                Toast.makeText(AlarmActivity.this, "Break in Acknowledged", Toast.LENGTH_SHORT).show();
             }
         });
+
+        breakInDetected.setVisibility(View.INVISIBLE);
+        breakInButton.setVisibility(View.INVISIBLE);
+
     }
+
     @Override
     protected void onStart() {
 
@@ -104,7 +104,7 @@ public class AlarmActivity extends Activity {
         @Override
         protected Void doInBackground(Void... params) {
             HTTPRequestHandler requestHandler = HTTPRequestHandler.getInstance();
-            requestHandler.PostBreakIn(!breakIn);
+            requestHandler.PostBreakIn(true);
             return null;
         }
 
@@ -129,15 +129,14 @@ public class AlarmActivity extends Activity {
                 alarmOn = json.getBoolean("alarm_armed");
                 breakIn = json.getBoolean("break_in");
 
-                if(breakIn) {
+                if(!breakIn) {
                     breakInDetected.setVisibility(View.INVISIBLE);
                     breakInButton.setVisibility(View.INVISIBLE);
-
                 }
                 else{
-
                     breakInDetected.setTextColor(Color.RED);
                     breakInDetected.setText("BREAK IN!!!");
+                    breakInDetected.setVisibility(View.VISIBLE);
                     breakInButton.setVisibility(View.VISIBLE);
                 }
 

@@ -6,7 +6,7 @@ import web
 
 from CustomJSONEncoder import CustomJSONEncoder
 from datetime import datetime, timedelta
-from FakeSensors import MotionSensor, TemperatureSensor
+from Sensors import MotionSensor, TemperatureSensor
 from Task import TaskScheduler, TaskType
 from twython import Twython
 
@@ -51,7 +51,6 @@ motion_sensor = MotionSensor()
 app = web.application(urls, globals())
 
 def my_loadhook():
-    print 'Adding headers'
     web.header('Access-Control-Allow-Origin', '*')
     web.header('Access-Control-Allow-Credentials', 'true')
     web.header('Access-Control-Allow-Methods', 'GET, POST')
@@ -342,21 +341,21 @@ def monitor():
 
 
 # checks to see if a break-in has occurred
-# def motion():
-#     time.sleep(5)  # allows the server time to start up
-#
-#     while True:
-#         cords = motion_sensor.get_cords()
-#
-#         diff = dict()
-#         diff['x'] = abs(cords['x'] - motion_sensor.init_cords['x'])
-#         diff['y'] = abs(cords['y'] - motion_sensor.init_cords['y'])
-#         diff['z'] = abs(cords['z'] - motion_sensor.init_cords['z'])
-#
-#         if diff['x'] > 100 or diff['y'] > 100 or diff['z'] > 100:
-#             app.request('/BreakIn', method='POST')
-#
-#         time.sleep(5)
+def motion():
+    time.sleep(5)  # allows the server time to start up
+
+    while True:
+        cords = motion_sensor.get_cords()
+
+        diff = dict()
+        diff['x'] = abs(cords['x'] - motion_sensor.init_cords['x'])
+        diff['y'] = abs(cords['y'] - motion_sensor.init_cords['y'])
+        diff['z'] = abs(cords['z'] - motion_sensor.init_cords['z'])
+        
+        if diff['x'] > 100 or diff['y'] > 100 or diff['z'] > 100:
+            app.request('/BreakIn', method='POST')
+
+        time.sleep(5)
 
 
 # equivalent to public static void main
@@ -365,9 +364,9 @@ if __name__ == "__main__":
     monitor_thread.daemon = True
     monitor_thread.start()
 
-    # motion_thread = threading.Thread(target=motion)
-    # motion_thread.daemon = True
-    # motion_thread.start()
+    motion_thread = threading.Thread(target=motion)
+    motion_thread.daemon = True
+    motion_thread.start()
 
     app.request('/Twitter/{0}'.format(read_twitter_id()), method='POST')
     app.run()

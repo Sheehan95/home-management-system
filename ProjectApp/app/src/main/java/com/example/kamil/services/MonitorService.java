@@ -98,6 +98,7 @@ public class MonitorService extends Service {
                     notification.setContentTitle("BREAK IN");
                     notification.setContentText("There has been a break-in in your premises");
                     notification.setVibrate(new long[]{1000, 1000, 1000});
+                    notification.setAutoCancel(true);
 
                     Intent resultIntent = new Intent(MonitorService.this, AlarmActivity.class);
                     TaskStackBuilder stackBuilder = TaskStackBuilder.create(MonitorService.this);
