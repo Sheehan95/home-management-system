@@ -91,7 +91,6 @@ class Task:
 
         # calculate the time between now & the scheduled time
         run_at = (self.date - datetime.now()).total_seconds()
-
         self.timer = threading.Timer(run_at, self.run)
         self.timer.start()
 

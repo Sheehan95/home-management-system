@@ -50,6 +50,14 @@ motion_sensor = MotionSensor()
 # setting up the server
 app = web.application(urls, globals())
 
+def my_loadhook():
+    print 'Adding headers'
+    web.header('Access-Control-Allow-Origin', '*')
+    web.header('Access-Control-Allow-Credentials', 'true')
+    web.header('Access-Control-Allow-Methods', 'GET, POST')
+
+app.add_processor(web.loadhook(my_loadhook))
+
 
 # handles requests to /
 class IndexHandler:
@@ -335,7 +343,6 @@ def monitor():
 
 # checks to see if a break-in has occurred
 # def motion():
-#
 #     time.sleep(5)  # allows the server time to start up
 #
 #     while True:

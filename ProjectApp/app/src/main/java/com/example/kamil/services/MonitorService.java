@@ -68,7 +68,7 @@ public class MonitorService extends Service {
         @Override
         protected JSONObject doInBackground(Void... params) {
             HTTPRequestHandler requestHandler = HTTPRequestHandler.getInstance();
-            return requestHandler.getAlarm();
+            return requestHandler.getAlarmStatus();
         }
 
         @Override

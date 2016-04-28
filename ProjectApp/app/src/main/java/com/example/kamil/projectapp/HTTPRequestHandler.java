@@ -132,13 +132,79 @@ public class HTTPRequestHandler {
 
     }
 
-    /**
-     * Gets whether the alarm is armed or not, as well as if there has been a break-in detected by
-     * the Raspberry Pi.
-     *
-     * @return the alarm & break-in status
-     */
-    public JSONObject getAlarm(){
+    public void PostArmAlarm (boolean alarmOn) {
+
+        JSONObject json = null;
+        HttpURLConnection connection = null;
+        StringBuffer response = new StringBuffer();
+
+        try {
+
+            connection = (HttpURLConnection) new URL(String.format("http://%s:8080%s", domain, ENDPOINT_ALARM)).openConnection();
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+
+            json = new JSONObject();
+            json.put("arm", alarmOn);
+
+            DataOutputStream output = new DataOutputStream(connection.getOutputStream());
+            output.writeBytes(json.toString());
+            output.flush();
+            output.close();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String nextLine = null;
+
+            while ((nextLine = reader.readLine()) != null){
+                response.append(nextLine);
+            }
+
+        } catch (MalformedURLException e){
+            Log.e("ERROR", "MALFORMED URL EXCEPTION OCCURRED ON: " + e.toString());
+        } catch (IOException e) {
+            Log.e("ERROR", "IO EXCEPTION OCCURRED ON: " + e.toString());
+        } catch (JSONException e){
+            Log.e("ERROR", "JSON EXCEPTION ON: " + e.toString());
+        }
+    }
+
+    public void PostBreakIn (boolean breakIn) {
+
+        JSONObject json = null;
+        HttpURLConnection connection = null;
+        StringBuffer response = new StringBuffer();
+
+        try {
+
+            connection = (HttpURLConnection) new URL(String.format("http://%s:8080%s", domain, ENDPOINT_ALARM)).openConnection();
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+
+            json = new JSONObject();
+            json.put("ack", breakIn);
+
+            DataOutputStream output = new DataOutputStream(connection.getOutputStream());
+            output.writeBytes(json.toString());
+            output.flush();
+            output.close();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String nextLine = null;
+
+            while ((nextLine = reader.readLine()) != null){
+                response.append(nextLine);
+            }
+
+        } catch (MalformedURLException e){
+            Log.e("ERROR", "MALFORMED URL EXCEPTION OCCURRED ON: " + e.toString());
+        } catch (IOException e) {
+            Log.e("ERROR", "IO EXCEPTION OCCURRED ON: " + e.toString());
+        } catch (JSONException e){
+            Log.e("ERROR", "JSON EXCEPTION ON: " + e.toString());
+        }
+    }
+
+    public JSONObject getAlarmStatus(){
 
         JSONObject json = null;
         HttpURLConnection connection = null;
@@ -170,50 +236,88 @@ public class HTTPRequestHandler {
 
     }
 
-
-    /**
-     * Arms or disarms the alarm on the Raspberry Pi.
-     *
-     * @param armAlarm true to arm the alarm, false otherwise
-     * @param acknowledge true to acknowledge a break-in, false otherwise
-     */
-    public void postAlarm(boolean armAlarm, boolean acknowledge){
-
-        JSONObject json = null;
-        HttpURLConnection connection = null;
-        StringBuffer response = new StringBuffer();
-
-        try {
-
-            connection = (HttpURLConnection) new URL(String.format("http://%s:8080%s", domain, ENDPOINT_TEMPERATURE)).openConnection();
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
-
-            json = new JSONObject();
-            json.put("arm",  armAlarm);
-            json.put("ack", acknowledge);
-
-            DataOutputStream output = new DataOutputStream(connection.getOutputStream());
-            output.writeBytes(json.toString());
-            output.flush();
-            output.close();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String nextLine = null;
-
-            while ((nextLine = reader.readLine()) != null){
-                response.append(nextLine);
-            }
-
-        } catch (MalformedURLException e){
-            Log.e("ERROR", "MALFORMED URL EXCEPTION OCCURRED ON: " + e.toString());
-        } catch (IOException e){
-            Log.e("ERROR", "IO EXCEPTION OCCURRED ON: " + e.toString());
-        } catch (JSONException e){
-            Log.e("ERROR", "JSON EXCEPTION ON: " + e.toString());
-        }
-
-    }
+//    /**
+//     * Gets whether the alarm is armed or not, as well as if there has been a break-in detected by
+//     * the Raspberry Pi.
+//     *
+//     * @return the alarm & break-in status
+//     */
+//    public JSONObject getAlarm(){
+//
+//        JSONObject json = null;
+//        HttpURLConnection connection = null;
+//        StringBuffer response = new StringBuffer();
+//
+//        try {
+//
+//            connection = (HttpURLConnection) new URL(String.format("http://%s:8080%s", domain, ENDPOINT_ALARM)).openConnection();
+//            connection.setRequestMethod("GET");
+//
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+//            String nextLine = null;
+//
+//            while ((nextLine = reader.readLine()) != null){
+//                response.append(nextLine);
+//            }
+//
+//            json = new JSONObject(response.toString());
+//
+//        } catch (MalformedURLException e){
+//            Log.e("ERROR", "MALFORMED URL EXCEPTION OCCURRED ON: " + e.toString());
+//        } catch (IOException e){
+//            Log.e("ERROR", "IO EXCEPTION OCCURRED ON: " + e.toString());
+//        } catch (JSONException e){
+//            Log.e("ERROR", "JSON EXCEPTION ON: " + e.toString());
+//        }
+//
+//        return json;
+//
+//    }
+//
+//
+//    /**
+//     * Arms or disarms the alarm on the Raspberry Pi.
+//     *
+//     * @param armAlarm true to arm the alarm, false otherwise
+//     * @param acknowledge true to acknowledge a break-in, false otherwise
+//     */
+//    public void postAlarm(boolean armAlarm, boolean acknowledge){
+//
+//        JSONObject json = null;
+//        HttpURLConnection connection = null;
+//        StringBuffer response = new StringBuffer();
+//
+//        try {
+//
+//            connection = (HttpURLConnection) new URL(String.format("http://%s:8080%s", domain, ENDPOINT_TEMPERATURE)).openConnection();
+//            connection.setRequestMethod("POST");
+//            connection.setDoOutput(true);
+//
+//            json = new JSONObject();
+//            json.put("arm",  armAlarm);
+//            json.put("ack", acknowledge);
+//
+//            DataOutputStream output = new DataOutputStream(connection.getOutputStream());
+//            output.writeBytes(json.toString());
+//            output.flush();
+//            output.close();
+//
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+//            String nextLine = null;
+//
+//            while ((nextLine = reader.readLine()) != null){
+//                response.append(nextLine);
+//            }
+//
+//        } catch (MalformedURLException e){
+//            Log.e("ERROR", "MALFORMED URL EXCEPTION OCCURRED ON: " + e.toString());
+//        } catch (IOException e){
+//            Log.e("ERROR", "IO EXCEPTION OCCURRED ON: " + e.toString());
+//        } catch (JSONException e){
+//            Log.e("ERROR", "JSON EXCEPTION ON: " + e.toString());
+//        }
+//
+//    }
 
 
     /**

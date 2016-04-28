@@ -1,3 +1,5 @@
+from time import sleep
+from copy import deepcopy
 from mpl3115a2 import mpl
 from mma8491q import mma
 
@@ -24,7 +26,8 @@ class MotionSensor:
         self.sensor.init()
         self.sensor.enable()
 
-        self.init_cords = self.get_cords()
+        sleep(3)
+        self.init_cords = deepcopy(self.get_cords())
 
     def get_cords(self):
         (x, y, z) = self.sensor.getAccelerometer()
