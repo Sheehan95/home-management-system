@@ -8,13 +8,6 @@
 	<body>
 		
 		<?php
-		/*file_get_contents("http://192.168.0.30:8080/temperature");
-		echo $http_response_header[3] . "<br>";
-		file_get_contents("http://192.168.0.30:8080/motion");
-		echo "coordinates: { " . $http_response_header[3] . ", " . $http_response_header[4] . ", " . $http_response_header[5] . " }<br>";
-		file_get_contents("http://192.168.0.30:8080/alarm");
-		echo $http_response_header[3] . "<br>";*/
-		
 		if ($_POST["username"] != "employee" && $_POST["password"] != "employee") {
 			header("Location: login.php");
 			exit();
@@ -32,9 +25,51 @@
 				<th><div class="tableText">Owner</div></th>
 				<th><div class="tableText">Address</div></th>
 				<th><div class="tableText">Temperature</div></th>
-				<th><div class="tableText">Motion</div></th>
+				<th><div class="tableText">Alarm</div></th>
 				<th><div class="tableText">Alarm Status</div></th>
 				<th></th>
+			</tr>
+			<tr>
+				<td><div class="tableText id">0</div></td>
+				<td class="editable"><div class="tableText name">Robert O'Riordan</div></td>
+				<td class="editable"><div class="tableText address">11A Landscape Park, Pouladuff Road</div></td>
+				<td><div class="tableText">
+					<?php
+						$json = file_get_contents('http://localhost:8080/Temperature');
+						$obj = json_decode($json);
+						echo $obj->temperature;
+					?>
+				</div></td>
+				<td class="editable"><div class="tableText alarm">
+				<select>
+				<option value="Armed">Armed</option>
+				<option value="Armed" 
+					<?php
+						$json = file_get_contents('http://localhost:8080/Alarm');
+						$obj = json_decode($json);
+						if ($obj->alarm_armed == false) {
+							echo "selected=\"selected\"";
+						}
+					?>
+				>Unarmed</option>
+				</select>
+				</div></td>
+				<td><div class="tableText">
+					<?php
+						$json = file_get_contents('http://localhost:8080/Alarm');
+						$obj = json_decode($json);
+						if ($obj->break_in == true) {
+							echo "Break-in occurred!<span title=\"Acknowlege Break-in\"><img class=\"warning\" src=\"images/warning.png\" height=\"20\" width=\"20\"></span>";
+						}
+						else {
+							echo "No Break-ins";
+						}
+					?>
+				</div></td>
+				<td>
+				<span title="Save Changes"><img class="save" src="images/saveicon.png" height="20" width="20"></span>
+				<span title="Delete Customer"><img class="delete" src="images/delete.png" height="20" width="20"></span>	
+				</td>
 			</tr>
 		</table>
 	</body>

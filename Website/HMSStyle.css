@@ -62,11 +62,11 @@ td{
 	padding: 2.5%;
 }
 
-.delete:hover, .save:hover{
+.delete:hover, .save:hover, .warning:hover{
 	cursor: pointer; 
 }
 
-.delete, .save{
+.delete, .save, .warning{
 	margin: 10px;
 }
 
